@@ -2,11 +2,7 @@
 
 - First things first: we cannot run a container
 
---
-
 - We are going to run a pod, and in that pod there will be a single container
-
---
 
 - In that container in the pod, we are going to run a simple `ping` command
 
@@ -28,8 +24,6 @@
 
 ]
 
---
-
 OK, what just happened?
 
 ---
@@ -46,8 +40,6 @@ OK, what just happened?
   ```
 
 ]
-
---
 
 We should see the following things:
 - `deployment.apps/pingpong` (the *deployment* that we just created)
@@ -78,6 +70,12 @@ Note: as of 1.10.1, resource types are displayed in more detail.
   - rarely used directly
 
 - A *replication controller* is the (deprecated) predecessor of a replica set
+
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_pods_deployment.png)
 
 ---
 
@@ -178,6 +176,12 @@ We could! But the *deployment* would notice it right away, and scale back to the
 
 ---
 
+class: pic
+
+![Node, pod, container](images/k8s_training_scaled_pods.png)
+
+---
+
 ## Resilience
 
 - The *deployment* `pingpong` watches its *replica set*
@@ -243,18 +247,3 @@ We could! But the *deployment* would notice it right away, and scale back to the
 ]
 
 Unfortunately, `--follow` cannot (yet) be used to stream the logs from multiple containers.
-
----
-
-## Aren't we flooding 1.1.1.1?
-
-- If you're wondering this, good question!
-
-- Don't worry, though:
-
-  *APNIC's research group held the IP addresses 1.1.1.1 and 1.0.0.1. While the addresses were valid, so many people had entered them into various random systems that they were continuously overwhelmed by a flood of garbage traffic. APNIC wanted to study this garbage traffic but any time they'd tried to announce the IPs, the flood would overwhelm any conventional network.*
-
-  (Source: https://blog.cloudflare.com/announcing-1111/)
-
-- It's very unlikely that our concerted pings manage to produce
-  even a modest blip at Cloudflare's NOC!

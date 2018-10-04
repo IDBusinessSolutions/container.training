@@ -8,11 +8,11 @@ Our app on Kube
 
 In this part, we will:
 
-- **build** images for our app,
+<!-- - **build** images for our app, -->
 
-- **ship** these images with a registry,
+<!-- - **ship** these images with a registry, -->
 
-- **run** deployments using these images,
+- **run** deployments using pre-baked images,
 
 - expose these deployments so they can communicate with each other,
 
@@ -22,202 +22,11 @@ In this part, we will:
 
 ## The plan
 
-- Build on our control node (`node1`)
-
-- Tag images so that they are named `$REGISTRY/servicename`
-
-- Upload them to a registry
-
-- Create deployments using the images
+- Create deployments using the pre-baked images
 
 - Expose (with a ClusterIP) the services that need to communicate
 
 - Expose (with a NodePort) the WebUI
-
----
-
-## Which registry do we want to use?
-
-- We could use the Docker Hub
-
-- Or a service offered by our cloud provider (ACR, GCR, ECR...)
-
-- Or we could just self-host that registry
-
-*We'll self-host the registry because it's the most generic solution for this workshop.*
-
----
-
-## Using the open source registry
-
-- We need to run a `registry:2` container
-  <br/>(make sure you specify tag `:2` to run the new version!)
-
-- It will store images and layers to the local filesystem
-  <br/>(but you can add a config file to use S3, Swift, etc.)
-
-- Docker *requires* TLS when communicating with the registry
-
-  - unless for registries on `127.0.0.0/8` (i.e. `localhost`)
-
-  - or with the Engine flag `--insecure-registry`
-
-- Our strategy: publish the registry container on a NodePort,
-  <br/>so that it's available through `127.0.0.1:xxxxx` on each node
-
----
-
-# Deploying a self-hosted registry
-
-- We will deploy a registry container, and expose it with a NodePort
-
-.exercise[
-
-- Create the registry service:
-  ```bash
-  kubectl run registry --image=registry:2
-  ```
-
-- Expose it on a NodePort:
-  ```bash
-  kubectl expose deploy/registry --port=5000 --type=NodePort
-  ```
-
-]
-
----
-
-## Connecting to our registry
-
-- We need to find out which port has been allocated
-
-.exercise[
-
-- View the service details:
-  ```bash
-  kubectl describe svc/registry
-  ```
-
-- Get the port number programmatically:
-  ```bash
-  NODEPORT=$(kubectl get svc/registry -o json | jq .spec.ports[0].nodePort)
-  REGISTRY=127.0.0.1:$NODEPORT
-  ```
-
-]
-
----
-
-## Testing our registry
-
-- A convenient Docker registry API route to remember is `/v2/_catalog`
-
-.exercise[
-
-- View the repositories currently held in our registry:
-  ```bash
-  curl $REGISTRY/v2/_catalog
-  ```
-
-]
-
---
-
-We should see:
-```json
-{"repositories":[]}
-```
-
----
-
-## Testing our local registry
-
-- We can retag a small image, and push it to the registry
-
-.exercise[
-
-- Make sure we have the busybox image, and retag it:
-  ```bash
-  docker pull busybox
-  docker tag busybox $REGISTRY/busybox
-  ```
-
-- Push it:
-  ```bash
-  docker push $REGISTRY/busybox
-  ```
-
-]
-
----
-
-## Checking again what's on our local registry
-
-- Let's use the same endpoint as before
-
-.exercise[
-
-- Ensure that our busybox image is now in the local registry:
-  ```bash
-  curl $REGISTRY/v2/_catalog
-  ```
-
-]
-
-The curl command should now output:
-```json
-{"repositories":["busybox"]}
-```
-
----
-
-## Building and pushing our images
-
-- We are going to use a convenient feature of Docker Compose
-
-.exercise[
-
-- Go to the `stacks` directory:
-  ```bash
-  cd ~/container.training/stacks
-  ```
-
-- Build and push the images:
-  ```bash
-  export REGISTRY
-  export TAG=v0.1
-  docker-compose -f dockercoins.yml build
-  docker-compose -f dockercoins.yml push
-  ```
-
-]
-
-Let's have a look at the `dockercoins.yml` file while this is building and pushing.
-
----
-
-```yaml
-version: "3"
-
-services:
-  rng:
-    build: dockercoins/rng
-    image: ${REGISTRY-127.0.0.1:5000}/rng:${TAG-latest}
-    deploy:
-      mode: global
-  ...
-  redis:
-    image: redis
-  ...
-  worker:
-    build: dockercoins/worker
-    image: ${REGISTRY-127.0.0.1:5000}/worker:${TAG-latest}
-    ...
-    deploy:
-      replicas: 10
-```
-
-.warning[Just in case you were wondering ... Docker "services" are not Kubernetes "services".]
 
 ---
 
@@ -283,11 +92,7 @@ class: extra-details
 
 ]
 
---
-
 🤔 `rng` is fine ... But not `worker`.
-
---
 
 💡 Oh right! We forgot to `expose`.
 
@@ -335,25 +140,23 @@ class: extra-details
 
 ]
 
---
-
 We should now see the `worker`, well, working happily.
 
 ---
 
-# Exposing services for external access
+# Exposing services for access
 
 - Now we would like to access the Web UI
 
-- We will expose it with a `NodePort`
+- We will expose it with a `ClusterIP`
 
   (just like we did for the registry)
 
 .exercise[
 
-- Create a `NodePort` service for the Web UI:
+- Create a `ClusterIP` service for the Web UI:
   ```bash
-  kubectl expose deploy/webui --type=NodePort --port=80
+  kubectl expose deploy/webui --type=ClusterIP --port=80
   ```
 
 - Check the port that was allocated:
@@ -367,16 +170,15 @@ We should now see the `worker`, well, working happily.
 
 ## Accessing the web UI
 
-- We can now connect to *any node*, on the allocated node port, to view the web UI
+- We can now connect to the service to view the web UI
 
 .exercise[
 
-- Open the web UI in your browser (http://node-ip-address:3xxxx/)
+- Use port forwarding: `kubectl port-forward svc/webui 8080:80`
 
-<!-- ```open http://node1:3xxxx/``` -->
+- Open the web UI in your browser (http://localhost:8080/)
+
+<!-- ```open http://localhost:80/``` -->
 
 ]
 
---
-
-*Alright, we're back to where we started, when we were running on a single node!*

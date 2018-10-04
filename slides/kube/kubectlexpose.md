@@ -99,21 +99,9 @@ Note: please DO NOT call the service `search`. It would collide with the TLD.
 
 ---
 
-## Services are layer 4 constructs
+class: pic
 
-- You can assign IP addresses to services, but they are still *layer 4*
-
-  (i.e. a service is not an IP address; it's an IP address + protocol + port)
-
-- This is caused by the current implementation of `kube-proxy`
-
-  (it relies on mechanisms that don't support layer 3)
-
-- As a result: you *have to* indicate the port number for your service
-    
-- Running services with arbitrary port (or port ranges) requires hacks
-
-  (e.g. host networking mode)
+![Node, pod, container](images/k8s_training_expose_deployment.png)
 
 ---
 
@@ -123,65 +111,23 @@ Note: please DO NOT call the service `search`. It would collide with the TLD.
 
 .exercise[
 
-- Let's obtain the IP address that was allocated for our service, *programmatically:*
+- Let's talk to our service, *programmatically:*
   ```bash
-  IP=$(kubectl get svc elastic -o go-template --template '{{ .spec.clusterIP }}')
+kubectl port-forward svc/elastic 9200:9200
   ```
 
-- Send a few requests:
+- In another terminal, send a few requests:
   ```bash
-  curl http://$IP:9200/
+  curl http://localhost:9200/
   ```
 
 ]
-
---
 
 We may see `curl: (7) Failed to connect to _IP_ port 9200: Connection refused`.
 
 This is normal while the service starts up.
 
---
-
 Once it's running, our requests are load balanced across multiple pods.
-
----
-
-class: extra-details
-
-## If we don't need a load balancer
-
-- Sometimes, we want to access our scaled services directly:
-
-  - if we want to save a tiny little bit of latency (typically less than 1ms)
-
-  - if we need to connect over arbitrary ports (instead of a few fixed ones)
-
-  - if we need to communicate over another protocol than UDP or TCP
-
-  - if we want to decide how to balance the requests client-side
-
-  - ...
-
-- In that case, we can use a "headless service"
-
----
-
-class: extra-details
-
-## Headless services
-
-- A headless service is obtained by setting the `clusterIP` field to `None`
-
-  (Either with `--cluster-ip=None`, or by providing a custom YAML)
-
-- As a result, the service doesn't have a virtual IP address
-
-- Since there is no virtual IP address, there is no load balancer either
-
-- `kube-dns` will return the pods' IP addresses as multiple `A` records
-
-- This gives us an easy way to discover all the replicas for a deployment
 
 ---
 

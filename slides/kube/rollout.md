@@ -62,30 +62,11 @@
 
 ---
 
-## Building a new version of the `worker` service
+## Deploying a new version of the `worker` service
 
-.exercise[
+- Update the `TAG` environment variable to state `1.0.1`
 
-- Go to the `stack` directory:
-  ```bash
-  cd ~/container.training/stacks
-  ```
-
-- Edit `dockercoins/worker/worker.py`, update the `sleep` line to sleep 1 second
-
-- Build a new tag and push it to the registry:
-  ```bash
-  #export REGISTRY=localhost:3xxxx
-  export TAG=v0.2
-  docker-compose -f dockercoins.yml build
-  docker-compose -f dockercoins.yml push
-  ```
-
-]
-
----
-
-## Rolling out the new `worker` service
+- Rolling out the new `worker` service
 
 .exercise[
 
@@ -104,8 +85,6 @@
   ```
 
 ]
-
---
 
 That rollout should be pretty quick. What shows in the web UI?
 
@@ -152,8 +131,6 @@ That rollout should be pretty quick. What shows in the web UI?
 
 ]
 
---
-
 Our rollout is stuck. However, the app is not dead (just 10% slower).
 
 ---
@@ -187,35 +164,6 @@ class: extra-details
 - Now we have 9 replicas up and running, and 2 being deployed
 
 - Our rollout is stuck at this point!
-
----
-
-## Checking the dashboard during the bad rollout
-
-If you haven't deployed the Kubernetes dashboard earlier, just skip this slide.
-
-.exercise[
-
-- Check which port the dashboard is on:
-  ```bash
-  kubectl -n kube-system get svc socat
-  ```
-
-]
-
-Note the `3xxxx` port.
-
-.exercise[
-
-- Connect to http://oneofournodes:3xxxx/
-
-<!-- ```open https://node1:3xxxx/``` -->
-
-]
-
---
-
-- We have failures in Deployments, Pods, and Replica Sets
 
 ---
 
@@ -292,7 +240,7 @@ spec:
         spec:
           containers:
           - name: worker
-            image: $REGISTRY/worker:v0.1
+            image: $REGISTRY/worker:1.0.1
       strategy:
         rollingUpdate:
           maxUnavailable: 0

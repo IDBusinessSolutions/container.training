@@ -2,16 +2,16 @@
 set -e
 case "$1" in
 once)
-  ./index.py
+  python2 ./index.py
   for YAML in *.yml; do
-    ./markmaker.py $YAML > $YAML.html || { 
+    python2 ./markmaker.py $YAML > $YAML.html || { 
       rm $YAML.html
       break
     }
   done
   if [ -n "$SLIDECHECKER" ]; then
     for YAML in *.yml; do
-      ./appendcheck.py $YAML.html
+      python2 ./appendcheck.py $YAML.html
     done
   fi
   ;;

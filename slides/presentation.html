@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deploying and Scaling Microservices with Kubernetes </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="workshop.css">
+  </head>
+  <body>
+    <!--
+    <div style="position: absolute; left: 20%; right: 20%; top: 30%;">
+      <h1 style="font-size: 3em;">Loading ...</h1>
+      The slides should show up here. If they don't, it might be
+      because you are accessing this file directly from your filesystem.
+      It needs to be served from a web server. You can try this:
+      <pre>
+        docker-compose up -d
+        open http://localhost:8888/workshop.html # on MacOS
+        xdg-open http://localhost:8888/workshop.html # on Linux
+      </pre>
+      Once the slides are loaded, this notice disappears when you
+      go full screen (e.g. by hitting "f").
+    </div>
+    -->
+    <textarea id="source">class: title, self-paced
+
+Deploying and Scaling Microservices<br/>with Kubernetes<br/>
+
+.nav[*Self-paced version*]
+
+.debug[
+```
+
+```
+
+These slides have been built from commit: dc922b8
+
+
+[common/title.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/title.md)]
+---
+
+class: title, in-person
+
+Deploying and Scaling Microservices<br/>with Kubernetes<br/><br/></br>
+
+.footnote[
+**Be kind to the WiFi!**<br/>
+<!-- *Use the 5G network.* -->
+*Don't use your hotspot.*<br/>
+*Don't stream videos or download big files during the workshop.*<br/>
+*Thank you!*
+
+**Slides: http://container.training/**
+]
+
+.debug[[common/title.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/title.md)]
+---
+## Intros
+
+- The workshop will run for half a day
+
+- This is a hands-on tutorial, so you will be running bash commands!
+
+- There will be coffee breaks!
+
+- Feel free to interrupt for questions at any time
+
+- *Especially when you see full screen container pictures!*
+
+
+.debug[[logistics.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/logistics.md)]
+---
+## A brief introduction
+
+- This was initially written by [Jérôme Petazzoni](https://twitter.com/jpetazzo) to support in-person,
+  instructor-led workshops and tutorials
+  
+- Credit is also due to [multiple contributors](https://github.com/jpetazzo/container.training/graphs/contributors) — thank you!
+
+- You can also follow along on your own, at your own pace
+
+- We included as much information as possible in these slides
+
+- We recommend having a mentor to help you ...
+
+- ... Or be comfortable spending some time reading the Kubernetes [documentation](https://kubernetes.io/docs/) ...
+
+- ... And looking for answers on [StackOverflow](http://stackoverflow.com/questions/tagged/kubernetes) and other outlets
+
+.debug[[kube/intro.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/intro.md)]
+---
+
+class: self-paced
+
+## Hands on, you shall practice
+
+- Nobody ever became a Jedi by spending their lives reading Wookiepedia
+
+- Likewise, it will take more than merely *reading* these slides
+  to make you an expert
+
+- These slides include *tons* of exercises and examples
+
+- They assume that you have access to a Kubernetes cluster
+
+- If you are attending a workshop or tutorial:
+  <br/>you will be given specific instructions to access your cluster
+
+- If you are doing this on your own:
+  <br/>the first chapter will give you various options to get your own cluster
+
+.debug[[kube/intro.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/intro.md)]
+---
+## About these slides
+
+- All the content is available in a public GitHub repository:
+
+  https://github.com/jpetazzo/container.training
+
+- You can get updated "builds" of the slides there:
+
+  http://container.training/
+
+<!--
+.exercise[
+```open https://github.com/jpetazzo/container.training```
+```open http://container.training/```
+]
+-->
+
+- Typos? Mistakes? Questions? Feel free to hover over the bottom of the slide ...
+
+.footnote[.emoji[👇] Try it! The source file will be shown and you can view it on GitHub and fork and edit it.]
+
+<!--
+.exercise[
+```open https://github.com/jpetazzo/container.training/tree/master/slides/common/about-slides.md```
+]
+-->
+
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+---
+
+class: extra-details
+
+## Extra details
+
+- This slide has a little magnifying glass in the top left corner
+
+- This magnifying glass indicates slides that provide extra details
+
+- Feel free to skip them if:
+
+  - you are in a hurry
+
+  - you are new to this and want to avoid cognitive overload
+
+  - you want only the most essential information
+
+- You can review these slides another time if you want, they'll be waiting for you ☺
+
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+---
+
+class: pre-reqs
+
+## Pre-Requisites 1
+
+- Basic Docker knowledge
+
+- If on Windows, it's probably a good idea to install `git-bash`!
+
+- You will need the `kubeconfig` file
+
+  - Copy to `~/.kube/config`
+
+  - If you have a config file already, you can put this somewhere else and reference via an `ENV` variable.
+
+  - E.g., `export KUBECONFIG=/path/to/config/file`
+
+- You will need `kubectl`
+
+  - If on MacOSX you can install via `brew`
+
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+---
+
+class: pre-reqs
+
+## Pre-Requisites 2
+
+- You will each be provided a dedicated namespace within the Kubernetes cluster, based on your username.
+
+- To set your default namespace, type the following command with your username:
+```bash
+kubectl config set-context $(kubectl config current-context) --namespace=<USERNAME_HERE>
+```
+
+- You can verify this worked by running:
+```bash
+kubectl config view | grep namespace:
+```
+
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+---
+
+class: pre-reqs
+
+## Pre-Requisites 3
+
+- Set-up the following environment variables
+
+  - `export REGISTRY=quay.io/idbs`
+
+  - `export TAG=1.0.0`
+
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+---
+
+name: toc-chapter-1
+
+## Chapter 1
+
+- [Kubernetes concepts](#toc-kubernetes-concepts)
+
+- [Namespaces](#toc-namespaces)
+
+- [Running our first containers on Kubernetes](#toc-running-our-first-containers-on-kubernetes)
+
+.debug[(auto-generated TOC)]
+---
+name: toc-chapter-2
+
+## Chapter 2
+
+- [Exposing containers](#toc-exposing-containers)
+
+- [Exposing services internally](#toc-exposing-services-internally)
+
+- [Exposing services for access](#toc-exposing-services-for-access)
+
+- [Accessing internal services with `kubectl proxy`](#toc-accessing-internal-services-with-kubectl-proxy)
+
+.debug[(auto-generated TOC)]
+---
+name: toc-chapter-3
+
+## Chapter 3
+
+- [Scaling a deployment](#toc-scaling-a-deployment)
+
+- [Daemon sets](#toc-daemon-sets)
+
+- [Labels and debugging](#toc-labels-and-debugging)
+
+- [Rolling updates](#toc-rolling-updates)
+
+- [Next Steps](#toc-next-steps)
+
+- [Links and resources](#toc-links-and-resources)
+
+.debug[(auto-generated TOC)]
+
+
+
+.debug[[common/toc.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/toc.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/Container-Ship-Freighter-Navigation-Elbe-Romance-1782991.jpg)]
+
+---
+
+name: toc-kubernetes-concepts
+class: title
+
+Kubernetes concepts
+
+.nav[
+[Previous section](#toc-)
+|
+[Back to table of contents](#toc-chapter-1)
+|
+[Next section](#toc-namespaces)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Kubernetes concepts
+
+- Kubernetes is a container management system
+
+- It runs and manages containerized applications on a cluster
+
+- What does that really mean?
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+## Basic things we can ask Kubernetes to do
+
+
+- Start 5 containers using image `atseashop/api:v1.3`
+
+- Place an internal load balancer in front of these containers
+
+- Start 10 containers using image `atseashop/webfront:v1.3`
+
+- Place a public load balancer in front of these containers
+
+- It's Black Friday (or Christmas), traffic spikes, grow our cluster and add containers
+
+- New release! Replace my containers with the new image `atseashop/webfront:v1.4`
+
+- Keep processing requests during the upgrade; update my containers one at a time
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+## Other things that Kubernetes can do for us
+
+- Basic autoscaling
+
+- Blue/green deployment, canary deployment
+
+- Long running services, but also batch (one-off) jobs
+
+- Overcommit our cluster and *evict* low-priority jobs
+
+- Run services with *stateful* data (databases etc.)
+
+- Fine-grained access control defining *what* can be done by *whom* on *which* resources
+
+- Integrating third party services (*service catalog*)
+
+- Automating complex tasks (*operators*)
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+## Kubernetes resources
+
+- The Kubernetes API defines a lot of objects called *resources*
+
+- These resources are organized by type, or `Kind` (in the API)
+
+- A few common resource types are:
+
+  - node (a machine — physical or virtual — in our cluster)
+  - pod (group of containers running together on a node)
+  - service (stable network endpoint to connect to one or multiple containers)
+  - namespace (more-or-less isolated group of things)
+  - secret (bundle of sensitive data to be passed to a container)
+ 
+  And much more! (We can see the full list by running `kubectl get`) for kubectl v1.10 or `kubectl api-resources` for kubectl 1.11
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s-arch3-thanks-weave.png)
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_nodes_and_pods.png)
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+## Credits
+
+- The diagram is courtesy of Weave Works
+
+  - a *pod* can have multiple containers working together
+
+  - IP addresses are associated with *pods*, not with individual containers
+
+Diagram used with permission.
+
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/ShippingContainerSFBay.jpg)]
+
+---
+
+name: toc-namespaces
+class: title
+
+Namespaces
+
+.nav[
+[Previous section](#toc-kubernetes-concepts)
+|
+[Back to table of contents](#toc-chapter-1)
+|
+[Next section](#toc-running-our-first-containers-on-kubernetes)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Namespaces
+
+- We cannot have two resources with the same name
+
+  (Or can we...?)
+
+- We cannot have two resources *of the same type* with the same name
+
+  (But it's OK to have a `rng` service, a `rng` deployment, and a `rng` daemon set!)
+
+- We cannot have two resources of the same type with the same name *in the same namespace*
+
+  (But it's OK to have e.g. two `rng` services in different namespaces!)
+
+- In other words: **the tuple *(type, name, namespace)* needs to be unique**
+
+  (In the resource YAML, the type is called `Kind`)
+
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+---
+
+## Pre-existing namespaces
+
+- We have three namespaces:
+
+  - `default` (can be for applications)
+
+  - `kube-system` (for the control plane)
+
+  - `kube-public` (contains one secret used for cluster discovery)
+
+- If we deploy differently, we may have different namespaces
+
+  - This is what we do in `Cloud Services`: we segregate tenant deployments using namespaces. 
+  
+  - Multi-tenanted services are deployed into a `common` namespace.
+
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+---
+
+## Using namespaces
+
+- We can pass a `-n` or `--namespace` flag to most `kubectl` commands:
+  ```bash
+  kubectl -n blue get svc
+  ```
+
+- We can also use *contexts*
+
+- A context is a *(user, cluster, namespace)* tuple
+
+- We can manipulate contexts with the `kubectl config` command
+
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_namespace.png)
+
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/aerial-view-of-containers.jpg)]
+
+---
+
+name: toc-running-our-first-containers-on-kubernetes
+class: title
+
+Running our first containers on Kubernetes
+
+.nav[
+[Previous section](#toc-namespaces)
+|
+[Back to table of contents](#toc-chapter-1)
+|
+[Next section](#toc-exposing-containers)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Running our first containers on Kubernetes
+
+- First things first: we cannot run a container
+
+- We are going to run a pod, and in that pod there will be a single container
+
+- In that container in the pod, we are going to run a simple `ping` command
+
+- Then we are going to start additional copies of the pod
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Starting a simple pod with `kubectl run`
+
+- We need to specify at least a *name* and the image we want to use
+
+.exercise[
+
+- Let's ping `1.1.1.1`, Cloudflare's 
+  [public DNS resolver](https://blog.cloudflare.com/announcing-1111/):
+  ```bash
+  kubectl run pingpong --image alpine ping 1.1.1.1
+  ```
+
+]
+
+OK, what just happened?
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Behind the scenes of `kubectl run`
+
+- Let's look at the resources that were created by `kubectl run`
+
+.exercise[
+
+- List most resource types:
+  ```bash
+  kubectl get all
+  ```
+
+]
+
+We should see the following things:
+- `deployment.apps/pingpong` (the *deployment* that we just created)
+- `replicaset.apps/pingpong-xxxxxxxxxx` (a *replica set* created by the deployment)
+- `pod/pingpong-xxxxxxxxxx-yyyyy` (a *pod* created by the replica set)
+
+Note: as of 1.10.1, resource types are displayed in more detail.
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## What are these different things?
+
+- A *deployment* is a high-level construct
+
+  - allows scaling, rolling updates, rollbacks
+
+  - multiple deployments can be used together to implement a
+    [canary deployment](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#canary-deployments)
+
+  - delegates pods management to *replica sets*
+
+- A *replica set* is a low-level construct
+
+  - makes sure that a given number of identical pods are running
+
+  - allows scaling
+
+  - rarely used directly
+
+- A *replication controller* is the (deprecated) predecessor of a replica set
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_pods_deployment.png)
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Our `pingpong` deployment
+
+- `kubectl run` created a *deployment*, `deployment.apps/pingpong`
+
+```
+NAME                       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/pingpong   1         1         1            1           10m
+```
+
+- That deployment created a *replica set*, `replicaset.apps/pingpong-xxxxxxxxxx`
+
+```
+NAME                                  DESIRED   CURRENT   READY     AGE
+replicaset.apps/pingpong-7c8bbcd9bc   1         1         1         10m
+```
+
+- That replica set created a *pod*, `pod/pingpong-xxxxxxxxxx-yyyyy`
+
+```
+NAME                            READY     STATUS    RESTARTS   AGE
+pod/pingpong-7c8bbcd9bc-6c9qz   1/1       Running   0          10m
+```
+
+- We'll see later how these folks play together for:
+
+  - scaling, high availability, rolling updates
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Viewing container output
+
+- Let's use the `kubectl logs` command
+
+- We will pass either a *pod name*, or a *type/name*
+
+  (E.g. if we specify a deployment or replica set, it will get the first pod in it)
+
+- Unless specified otherwise, it will only show logs of the first container in the pod
+
+  (Good thing there's only one in ours!)
+
+.exercise[
+
+- View the result of our `ping` command:
+  ```bash
+  kubectl logs deploy/pingpong
+  ```
+
+]
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Streaming logs in real time
+
+- Just like `docker logs`, `kubectl logs` supports convenient options:
+
+  - `-f`/`--follow` to stream logs in real time (à la `tail -f`)
+
+  - `--tail` to indicate how many lines you want to see (from the end)
+
+  - `--since` to get logs only after a given timestamp
+
+.exercise[
+
+- View the latest logs of our `ping` command:
+  ```bash
+  kubectl logs deploy/pingpong --tail 1 --follow
+  ```
+
+<!--
+```wait seq=3```
+```keys ^C```
+-->
+
+]
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Scaling our application
+
+- We can create additional copies of our container (I mean, our pod) with `kubectl scale`
+
+.exercise[
+
+- Scale our `pingpong` deployment:
+  ```bash
+  kubectl scale deploy/pingpong --replicas 8
+  ```
+
+]
+
+Note: what if we tried to scale `replicaset.apps/pingpong-xxxxxxxxxx`?
+
+We could! But the *deployment* would notice it right away, and scale back to the initial level.
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_scaled_pods.png)
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Resilience
+
+- The *deployment* `pingpong` watches its *replica set*
+
+- The *replica set* ensures that the right number of *pods* are running
+
+- What happens if pods disappear?
+
+.exercise[
+
+- In a separate window, list pods, and keep watching them:
+  ```bash
+  kubectl get pods -w
+  ```
+
+<!--
+```wait Running```
+```keys ^C```
+-->
+
+- Destroy a pod:
+  ```bash
+  kubectl delete pod pingpong-xxxxxxxxxx-yyyyy
+  ```
+]
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## What if we wanted something different?
+
+- What if we wanted to start a "one-shot" container that *doesn't* get restarted?
+
+- We could use `kubectl run --restart=OnFailure` or `kubectl run --restart=Never`
+
+- These commands would create *jobs* or *pods* instead of *deployments*
+
+- Under the hood, `kubectl run` invokes "generators" to create resource descriptions
+
+- We could also write these resource descriptions ourselves (typically in YAML),
+  <br/>and create them on the cluster with `kubectl apply -f` (discussed later)
+
+- With `kubectl run --schedule=...`, we can also create *cronjobs*
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+## Viewing logs of multiple pods
+
+- When we specify a deployment name, only one single pod's logs are shown
+
+- We can view the logs of multiple pods by specifying a *selector*
+
+- A selector is a logic expression using *labels*
+
+- Conveniently, when you `kubectl run somename`, the associated objects have a `run=somename` label
+
+.exercise[
+
+- View the last line of log from all pods with the `run=pingpong` label:
+  ```bash
+  kubectl logs -l run=pingpong --tail 1
+  ```
+
+]
+
+Unfortunately, `--follow` cannot (yet) be used to stream the logs from multiple containers.
+
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/blue-containers.jpg)]
+
+---
+
+name: toc-exposing-containers
+class: title
+
+Exposing containers
+
+.nav[
+[Previous section](#toc-running-our-first-containers-on-kubernetes)
+|
+[Back to table of contents](#toc-chapter-2)
+|
+[Next section](#toc-exposing-services-internally)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Exposing containers
+
+- `kubectl expose` creates a *service* for existing pods
+
+- A *service* is a stable address for a pod (or a bunch of pods)
+
+- If we want to connect to our pod(s), we need to create a *service*
+
+- Once a service is created, `kube-dns` will allow us to resolve it by name
+
+  (i.e. after creating service `hello`, the name `hello` will resolve to something)
+
+- There are different types of services, detailed on the following slides:
+
+  `ClusterIP`, `NodePort`, `LoadBalancer`, `ExternalName`
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+## Basic service types
+
+- `ClusterIP` (default type)
+
+  - a virtual IP address is allocated for the service (in an internal, private range)
+  - this IP address is reachable only from within the cluster (nodes and pods)
+  - our code can connect to the service using the original port number
+
+- `NodePort`
+
+  - a port is allocated for the service (by default, in the 30000-32768 range)
+  - that port is made available *on all our nodes* and anybody can connect to it
+  - our code must be changed to connect to that new port number
+
+These service types are always available.
+
+Under the hood: `kube-proxy` is using a userland proxy and a bunch of `iptables` rules.
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+## More service types
+
+- `LoadBalancer`
+
+  - an external load balancer is allocated for the service
+  - the load balancer is configured accordingly
+    <br/>(e.g.: a `NodePort` service is created, and the load balancer sends traffic to that port)
+
+- `ExternalName`
+
+  - the DNS entry managed by `kube-dns` will just be a `CNAME` to a provided record
+  - no port, no IP address, no nothing else is allocated
+
+The `LoadBalancer` type is currently only available on AWS, Azure, and GCE.
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+## Running containers with open ports
+
+- Since `ping` doesn't have anything to connect to, we'll have to run something else
+
+.exercise[
+
+- Start a bunch of ElasticSearch containers:
+  ```bash
+  kubectl run elastic --image=elasticsearch:2 --replicas=7
+  ```
+
+- Watch them being started:
+  ```bash
+  kubectl get pods -w
+  ```
+
+<!-- ```keys ^C``` -->
+
+]
+
+The `-w` option "watches" events happening on the specified resources.
+
+Note: please DO NOT call the service `search`. It would collide with the TLD.
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+## Exposing our deployment
+
+- We'll create a default `ClusterIP` service
+
+.exercise[
+
+- Expose the ElasticSearch HTTP API port:
+  ```bash
+  kubectl expose deploy/elastic --port 9200
+  ```
+
+- Look up which IP address was allocated:
+  ```bash
+  kubectl get svc
+  ```
+
+]
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_expose_deployment.png)
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+## Testing our service
+
+- We will now send a few HTTP requests to our ElasticSearch pods
+
+.exercise[
+
+- Let's talk to our service, *programmatically:*
+  ```bash
+kubectl port-forward svc/elastic 9200:9200
+  ```
+
+- In another terminal, send a few requests:
+  ```bash
+  curl http://localhost:9200/
+  ```
+
+]
+
+We may see `curl: (7) Failed to connect to _IP_ port 9200: Connection refused`.
+
+This is normal while the service starts up.
+
+Once it's running, our requests are load balanced across multiple pods.
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+class: extra-details
+
+## Services and endpoints
+
+- A service has a number of "endpoints"
+
+- Each endpoint is a host + port where the service is available
+
+- The endpoints are maintained and updated automatically by Kubernetes
+
+.exercise[
+
+- Check the endpoints that Kubernetes has associated with our `elastic` service:
+  ```bash
+  kubectl describe service elastic
+  ```
+
+]
+
+In the output, there will be a line starting with `Endpoints:`.
+
+That line will list a bunch of addresses in `host:port` format.
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+class: extra-details
+
+## Viewing endpoint details
+
+- When we have many endpoints, our display commands truncate the list
+  ```bash
+  kubectl get endpoints
+  ```
+
+- If we want to see the full list, we can use one of the following commands:
+  ```bash
+  kubectl describe endpoints elastic
+  kubectl get endpoints elastic -o yaml
+  ```
+
+- These commands will show us a list of IP addresses
+
+- These IP addresses should match the addresses of the corresponding pods:
+  ```bash
+  kubectl get pods -l run=elastic -o wide
+  ```
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+
+class: extra-details
+
+## `endpoints` not `endpoint`
+
+- `endpoints` is the only resource that cannot be singular
+
+```bash
+$ kubectl get endpoint
+error: the server doesn't have a resource type "endpoint"
+```
+
+- This is because the type itself is plural (unlike every other resource)
+
+- There is no `endpoint` object: `type Endpoints struct`
+
+- The type doesn't represent a single endpoint, but a list of endpoints
+
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+---
+class: title
+
+Our app on Kube
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+## What's on the menu?
+
+In this part, we will:
+
+<!-- - **build** images for our app, -->
+
+<!-- - **ship** these images with a registry, -->
+
+- **run** deployments using pre-baked images,
+
+- expose these deployments so they can communicate with each other,
+
+- expose the web UI so we can access it from outside.
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+## The plan
+
+- Create deployments using the pre-baked images
+
+- Expose (with a ClusterIP) the services that need to communicate
+
+- Expose (with a NodePort) the WebUI
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+class: extra-details
+
+## Avoiding the `latest` tag
+
+.warning[Make sure that you've set the `TAG` variable properly!]
+
+- If you don't, the tag will default to `latest`
+
+- The problem with `latest`: nobody knows what it points to!
+
+  - the latest commit in the repo?
+
+  - the latest commit in some branch? (Which one?)
+
+  - the latest tag?
+
+  - some random version pushed by a random team member?
+
+- If you keep pushing the `latest` tag, how do you roll back?
+
+- Image tags should be meaningful, i.e. correspond to code branches, tags, or hashes
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+## Deploying all the things
+
+- We can now deploy our code (as well as a redis instance)
+
+.exercise[
+
+- Deploy `redis`:
+  ```bash
+  kubectl run redis --image=redis
+  ```
+
+- Deploy everything else:
+  ```bash
+    for SERVICE in hasher rng webui worker; do
+      kubectl run $SERVICE --image=$REGISTRY/$SERVICE:$TAG
+    done
+  ```
+
+]
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+## Is this working?
+
+- After waiting for the deployment to complete, let's look at the logs!
+
+  (Hint: use `kubectl get deploy -w` to watch deployment events)
+
+.exercise[
+
+- Look at some logs:
+  ```bash
+  kubectl logs deploy/rng
+  kubectl logs deploy/worker
+  ```
+
+]
+
+🤔 `rng` is fine ... But not `worker`.
+
+💡 Oh right! We forgot to `expose`.
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/chinook-helicopter-container.jpg)]
+
+---
+
+name: toc-exposing-services-internally
+class: title
+
+Exposing services internally
+
+.nav[
+[Previous section](#toc-exposing-containers)
+|
+[Back to table of contents](#toc-chapter-2)
+|
+[Next section](#toc-exposing-services-for-access)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+
+# Exposing services internally
+
+- Three deployments need to be reachable by others: `hasher`, `redis`, `rng`
+
+- `worker` doesn't need to be exposed
+
+- `webui` will be dealt with later
+
+.exercise[
+
+- Expose each deployment, specifying the right port:
+  ```bash
+  kubectl expose deployment redis --port 6379
+  kubectl expose deployment rng --port 80
+  kubectl expose deployment hasher --port 80
+  ```
+
+]
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+## Is this working yet?
+
+- The `worker` has an infinite loop, that retries 10 seconds after an error
+
+.exercise[
+
+- Stream the worker's logs:
+  ```bash
+  kubectl logs deploy/worker --follow
+  ```
+
+  (Give it about 10 seconds to recover)
+
+<!--
+```keys
+^C
+```
+-->
+
+]
+
+We should now see the `worker`, well, working happily.
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/container-cranes.jpg)]
+
+---
+
+name: toc-exposing-services-for-access
+class: title
+
+Exposing services for access
+
+.nav[
+[Previous section](#toc-exposing-services-internally)
+|
+[Back to table of contents](#toc-chapter-2)
+|
+[Next section](#toc-accessing-internal-services-with-kubectl-proxy)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+
+# Exposing services for access
+
+- Now we would like to access the Web UI
+
+- We will expose it with a `ClusterIP`
+
+  (just like we did for the registry)
+
+.exercise[
+
+- Create a `ClusterIP` service for the Web UI:
+  ```bash
+  kubectl expose deploy/webui --type=ClusterIP --port=80
+  ```
+
+- Check the port that was allocated:
+  ```bash
+  kubectl get svc
+  ```
+
+]
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+## Accessing the web UI
+
+- We can now connect to the service to view the web UI
+
+.exercise[
+
+- Use port forwarding: `kubectl port-forward svc/webui 8080:80`
+
+- Open the web UI in your browser (http://localhost:8080/)
+
+<!-- ```open http://localhost:80/``` -->
+
+]
+
+
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/container-housing.jpg)]
+
+---
+
+name: toc-accessing-internal-services-with-kubectl-proxy
+class: title
+
+Accessing internal services with `kubectl proxy`
+
+.nav[
+[Previous section](#toc-exposing-services-for-access)
+|
+[Back to table of contents](#toc-chapter-2)
+|
+[Next section](#toc-scaling-a-deployment)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Accessing internal services with `kubectl proxy`
+
+- `kubectl proxy` runs a proxy in the foreground
+
+- This proxy lets us access the Kubernetes API without authentication
+
+  (`kubectl proxy` adds our credentials on the fly to the requests)
+
+- This proxy lets us access the Kubernetes API over plain HTTP
+
+- This is a great tool to learn and experiment with the Kubernetes API
+
+- The Kubernetes API also gives us a proxy to HTTP and HTTPS services
+
+- Therefore, we can use `kubectl proxy` to access internal services
+
+  (Without using a `NodePort` or similar service)
+
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+---
+
+## Secure by default
+
+- By default, the proxy listens on port 8001
+
+  (But this can be changed, or we can tell `kubectl proxy` to pick a port)
+
+- By default, the proxy binds to `127.0.0.1`
+
+  (Making it unreachable from other machines, for security reasons)
+
+- By default, the proxy only accepts connections from:
+
+  `^localhost$,^127\.0\.0\.1$,^\[::1\]$`
+
+- This is great when running `kubectl proxy` locally
+
+- Not-so-great when running it on a remote machine
+
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+---
+
+## Running `kubectl proxy` on a remote machine
+
+- We are going to bind to `INADDR_ANY` instead of `127.0.0.1`
+
+- We are going to accept connections from any address
+
+.exercise[
+
+- Run an open proxy to the Kubernetes API:
+  ```bash
+  kubectl proxy --port=8888 --address=0.0.0.0 --accept-hosts=.*
+  ```
+
+]
+
+.warning[Anyone can now do whatever they want with our Kubernetes cluster!
+<br/>
+(Don't do this on a real cluster!)]
+
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+---
+
+## Viewing available API routes
+
+- The default route (i.e. `/`) shows a list of available API endpoints
+
+.exercise[
+
+- Point your browser at `http://localhost:8888/`
+
+]
+
+The result should look like this:
+```json
+{
+  "paths": [
+    "/api",
+    "/api/v1",
+    "/apis",
+    "/apis/",
+    "/apis/admissionregistration.k8s.io",
+    …
+```
+
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+---
+
+## Connecting to a service through the proxy
+
+- The API can proxy HTTP and HTTPS requests by accessing a special route:
+  ```
+  /api/v1/namespaces/`name_of_namespace`/services/`name_of_service`/proxy
+  ```
+
+- Since we now have access to the API, we can use this special route
+
+.exercise[
+
+- Access the `hasher` service through the special proxy route:
+  ```open
+  http://localhost:8888/api/v1/namespaces/<username>/services/hasher/proxy
+  ```
+
+]
+
+You should see the banner of the hasher service: `HASHER running on ...`
+
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+---
+
+## Stopping the proxy
+
+- Remember: as it is running right now, `kubectl proxy` gives open access to our cluster
+
+.exercise[
+
+- Stop the `kubectl proxy` process with Ctrl-C
+
+]
+
+
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/containers-by-the-water.jpg)]
+
+---
+
+name: toc-scaling-a-deployment
+class: title
+
+Scaling a deployment
+
+.nav[
+[Previous section](#toc-accessing-internal-services-with-kubectl-proxy)
+|
+[Back to table of contents](#toc-chapter-3)
+|
+[Next section](#toc-daemon-sets)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Scaling a deployment
+
+- We will start with an easy one: the `worker` deployment
+
+.exercise[
+
+- Open two new terminals to check what's going on with pods and deployments:
+  ```bash
+  kubectl get pods -w
+  kubectl get deployments -w
+  ```
+
+<!-- ```keys ^C``` -->
+
+- Now, create more `worker` replicas:
+  ```bash
+  kubectl scale deploy/worker --replicas=10
+  ```
+
+]
+
+After a few seconds, the graph in the web UI should show up.
+<br/>
+(And peak at 10 hashes/second, just like when we were running on a single one.)
+
+.debug[[kube/kubectlscale.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlscale.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/distillery-containers.jpg)]
+
+---
+
+name: toc-daemon-sets
+class: title
+
+Daemon sets
+
+.nav[
+[Previous section](#toc-scaling-a-deployment)
+|
+[Back to table of contents](#toc-chapter-3)
+|
+[Next section](#toc-labels-and-debugging)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Daemon sets
+
+- What if we want to scale `rng` in a way that is different from how we scaled `worker`
+
+- For example, what if we want one (and exactly one) instance of `rng` per node
+
+- What if we just scale up `deploy/rng` to the number of nodes?
+
+  - nothing guarantees that the `rng` containers will be distributed evenly
+
+  - if we add nodes later, they will not automatically run a copy of `rng`
+
+  - if we remove (or reboot) a node, one `rng` container will restart elsewhere
+
+- Instead of a `deployment`, we could use a `daemonset`
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Daemon sets in practice
+
+- Daemon sets are great for cluster-wide, per-node processes:
+
+  - `kube-proxy`
+
+  - `weave` (our overlay network)
+
+  - monitoring agents
+
+  - hardware management tools (e.g. SCSI/FC HBA agents)
+
+  - etc.
+
+- They can also be restricted to run [only on some nodes](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#running-pods-on-only-some-nodes)
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Daemon sets - you won't really use them
+
+- Daemon sets are not something you would normally have to worry about.
+
+- So why mention them at all?
+
+- Well, we do use them for **infrastructure** related operations, such as
+
+  - `kube2iam` for identity access management
+
+  - `scalyr-agent` to record all logs into [scalyr](https://www.scalyr.com/) for analysis
+
+  - `sysdig-agent` for security, monitoring & forensics using [sysdig](https://sysdig.com/)
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+class: pic
+
+![Node, pod, container](images/k8s_training_daemonset.png)
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/lots-of-containers.jpg)]
+
+---
+
+name: toc-labels-and-debugging
+class: title
+
+Labels and debugging
+
+.nav[
+[Previous section](#toc-daemon-sets)
+|
+[Back to table of contents](#toc-chapter-3)
+|
+[Next section](#toc-rolling-updates)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+
+# Labels and debugging
+
+- When a pod is misbehaving, we can delete it: another one will be recreated
+
+- But we can also change its labels
+
+- It will be removed from the load balancer (it won't receive traffic anymore)
+
+- Another pod will be recreated immediately
+
+- But the problematic pod is still here, and we can inspect and debug it
+
+- We can even re-add it to the rotation if necessary
+
+  (Very useful to troubleshoot intermittent and elusive bugs)
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Labels and advanced rollout control
+
+- Conversely, we can add pods matching a service's selector
+
+- These pods will then receive requests and serve traffic
+
+- Examples:
+
+  - one-shot pod with all debug flags enabled, to collect logs
+
+  - pods created automatically, but added to rotation in a second step
+    <br/>
+    (by setting their label accordingly)
+
+- This gives us building blocks for canary and blue/green deployments
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Removing a pod from the load balancer
+
+- let's reuse our old friend `pingpong` and:
+
+  - Run it with a specific label
+  
+  - Remove (not destroy!) the pod by altering the pod label
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Creating our labelled deployment
+
+- let's start by creating a new deployment:
+
+.exercise[
+- in a separate window watch the pods so you can what happens:
+  ```bash
+  kubectl get pods -w
+  ```
+- Let's use a new deployment to ping `1.1.1.1`, Cloudflare's 
+  [public DNS resolver](https://blog.cloudflare.com/announcing-1111/):
+  ```bash
+  kubectl run labeldemo --labels isactive=yes --image alpine ping 1.1.1.1
+  ```
+]
+
+  notice the change to the run command: `--labels isactive=yes` - we're specifying a label to be applied to that deployment
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## What happened?
+- Unsurprisingly, we created a new pod that is constantly pinging.
+
+- So how is this different from our first attempt at this?
+
+.exercise[
+- using the label option, get the pods that are active and not active:
+```bash
+  kubectl get pods -l isactive=yes
+  kubectl get pods -l isactive=no
+```
+]
+- What do you see?
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Labels have been applied
+
+- you should have seen something like this:
+
+```
+$ kubectl get pods -l isactive=yes
+NAME                         READY     STATUS    RESTARTS   AGE
+labeldemo-854f7df968-p2rk9   1/1       Running   0          17s
+
+$ kubectl get pods -l isactive=no
+No resources found.
+```
+
+- our pod has an `isactive=yes` label applied to it
+
+- and there are no `isactive=no` pods running
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Altering a label
+
+- Now we wil edit one of our pods to make it "inactive" (using the handy `patch` command)
+.exercise[
+  ```bash
+PATCH='
+    metadata:
+      labels:
+        isactive: "no"
+    '
+    kubectl patch pod/labeldemo-XXXXXXXXXX-YYYYY -p "$PATCH" 
+```
+]
+
+- Remember to watch the pods while you do this
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## Checking our pods
+
+- you should have seen a new `pod` being created.
+
+- let's re-look at the state of our pods using the two label commands we used previously
+
+- You should now see an "inactive" pod listed:
+
+```
+$ kubectl get pods -l isactive=yes
+NAME                         READY     STATUS    RESTARTS   AGE
+labeldemo-854f7df968-lr62s   1/1       Running   0          30s
+
+$ kubectl get pods -l isactive=no
+NAME                         READY     STATUS    RESTARTS   AGE
+labeldemo-854f7df968-p2rk9   1/1       Running   0          14m
+```
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+## What happened?
+
+- We changed the `label` of our `pod`
+
+- The `replicaset` then noticed that the `pod` no longer met the "conditions" of the deployment and created a new `pod`
+
+- Most importantly, the old `pod` was **not** removed
+
+- If the service on this `pod` was problematic then we could safely attach a debugger without impacting the customers in any way.
+
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/plastic-containers.JPG)]
+
+---
+
+name: toc-rolling-updates
+class: title
+
+Rolling updates
+
+.nav[
+[Previous section](#toc-labels-and-debugging)
+|
+[Back to table of contents](#toc-chapter-3)
+|
+[Next section](#toc-next-steps)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Rolling updates
+
+- By default (without rolling updates), when a scaled resource is updated:
+
+  - new pods are created
+
+  - old pods are terminated
+  
+  - ... all at the same time
+  
+  - if something goes wrong, ¯\\\_(ツ)\_/¯
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Rolling updates
+
+- With rolling updates, when a resource is updated, it happens progressively
+
+- Two parameters determine the pace of the rollout: `maxUnavailable` and `maxSurge`
+
+- They can be specified in absolute number of pods, or percentage of the `replicas` count
+
+- At any given time ...
+
+  - there will always be at least `replicas`-`maxUnavailable` pods available
+
+  - there will never be more than `replicas`+`maxSurge` pods in total
+
+  - there will therefore be up to `maxUnavailable`+`maxSurge` pods being updated
+
+- We have the possibility to rollback to the previous version
+  <br/>(if the update fails or is unsatisfactory in any way)
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Checking current rollout parameters
+
+- Recall how we build custom reports with `kubectl` and `jq`:
+
+.exercise[
+
+- Show the rollout plan for our deployments:
+  ```bash
+    kubectl get deploy -o json |
+            jq ".items[] | {name:.metadata.name} + .spec.strategy.rollingUpdate"
+  ```
+
+]
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+
+## Rolling updates in practice
+
+- As of Kubernetes 1.8, we can do rolling updates with:
+
+  `deployments`, `daemonsets`, `statefulsets`
+
+- Editing one of these resources will automatically result in a rolling update
+
+- Rolling updates can be monitored with the `kubectl rollout` subcommand
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Deploying a new version of the `worker` service
+
+- Update the `TAG` environment variable to state `1.0.1`
+
+- Rolling out the new `worker` service
+
+.exercise[
+
+- Let's monitor what's going on by opening a few terminals, and run:
+  ```bash
+  kubectl get pods -w
+  kubectl get replicasets -w
+  kubectl get deployments -w
+  ```
+
+<!-- ```keys ^C``` -->
+
+- Update `worker` either with `kubectl edit`, or by running:
+  ```bash
+  kubectl set image deploy worker worker=$REGISTRY/worker:$TAG
+  ```
+
+]
+
+That rollout should be pretty quick. What shows in the web UI?
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Give it some time
+
+- At first, it looks like nothing is happening (the graph remains at the same level)
+
+- According to `kubectl get deploy -w`, the `deployment` was updated really quickly
+
+- But `kubectl get pods -w` tells a different story
+
+- The old `pods` are still here, and they stay in `Terminating` state for a while
+
+- Eventually, they are terminated; and then the graph decreases significantly
+
+- This delay is due to the fact that our worker doesn't handle signals
+
+- Kubernetes sends a "polite" shutdown request to the worker, which ignores it
+
+- After a grace period, Kubernetes gets impatient and kills the container
+
+  (The grace period is 30 seconds, but [can be changed](https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods) if needed)
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Rolling out something invalid
+
+- What happens if we make a mistake?
+
+.exercise[
+
+- Update `worker` by specifying a non-existent image:
+  ```bash
+  export TAG=v0.3
+  kubectl set image deploy worker worker=$REGISTRY/worker:$TAG
+  ```
+
+- Check what's going on:
+  ```bash
+  kubectl rollout status deploy worker
+  ```
+
+]
+
+Our rollout is stuck. However, the app is not dead (just 10% slower).
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## What's going on with our rollout?
+
+- Why is our app 10% slower?
+
+- Because `MaxUnavailable=1`, so the rollout terminated 1 replica out of 10 available
+
+- Okay, but why do we see 2 new replicas being rolled out?
+
+- Because `MaxSurge=1`, so in addition to replacing the terminated one, the rollout is also starting one more
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+class: extra-details
+
+## The nitty-gritty details
+
+- We start with 10 pods running for the `worker` deployment
+
+- Current settings: MaxUnavailable=1 and MaxSurge=1
+
+- When we start the rollout:
+
+  - one replica is taken down (as per MaxUnavailable=1)
+  - another is created (with the new version) to replace it
+  - another is created (with the new version) per MaxSurge=1
+
+- Now we have 9 replicas up and running, and 2 being deployed
+
+- Our rollout is stuck at this point!
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Recovering from a bad rollout
+
+- We could push some `v0.3` image
+
+  (the pod retry logic will eventually catch it and the rollout will proceed)
+
+- Or we could invoke a manual rollback
+
+.exercise[
+
+<!--
+```keys
+^C
+```
+-->
+
+- Cancel the deployment and wait for the dust to settle down:
+  ```bash
+  kubectl rollout undo deploy worker
+  kubectl rollout status deploy worker
+  ```
+
+]
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Changing rollout parameters
+
+- We want to:
+
+  - revert to `v0.1`
+  - be conservative on availability (always have desired number of available workers)
+  - be aggressive on rollout speed (update more than one pod at a time) 
+  - give some time to our workers to "warm up" before starting more
+
+The corresponding changes can be expressed in the following YAML snippet:
+
+.small[
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: $REGISTRY/worker:v0.1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 3
+  minReadySeconds: 10
+```
+]
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+## Applying changes through a YAML patch
+
+- We could use `kubectl edit deployment worker`
+
+- But we could also use `kubectl patch` with the exact YAML shown before
+
+.exercise[
+
+.small[
+
+- Apply all our changes and wait for them to take effect:
+  ```bash
+  kubectl patch deployment worker -p "
+    spec:
+      template:
+        spec:
+          containers:
+          - name: worker
+            image: $REGISTRY/worker:1.0.1
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 0
+          maxSurge: 3
+      minReadySeconds: 10
+    "
+  kubectl rollout status deployment worker
+  kubectl get deploy -o json worker |
+          jq "{name:.metadata.name} + .spec.strategy.rollingUpdate"
+  ```
+  ] 
+
+]
+
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/train-of-containers-1.jpg)]
+
+---
+
+name: toc-next-steps
+class: title
+
+Next Steps
+
+.nav[
+[Previous section](#toc-rolling-updates)
+|
+[Back to table of contents](#toc-chapter-3)
+|
+[Next section](#toc-links-and-resources)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Next Steps
+
+- Some follow-up topics...
+
+.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/whatsnext.md)]
+---
+
+## Managing the configuration of our applications
+
+- Two constructs are particularly useful: `secrets` and `config maps`
+
+- They allow to expose arbitrary information to our containers
+
+- **Avoid** storing configuration in container images
+
+  (There are some exceptions to that rule, but it's generally a Bad Idea)
+
+- **Never** store sensitive information in container images
+
+  (It's the container equivalent of the password on a post-it note on your screen)
+
+.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/whatsnext.md)]
+---
+
+## Managing stack deployments
+
+- The best deployment tool will vary, depending on:
+
+  - the size and complexity of your stack(s)
+  - how often you change it (i.e. add/remove components)
+  - the size and skills of your team
+
+- A few examples:
+
+  - shell scripts invoking `kubectl`
+  - YAML resources descriptions committed to a repo
+  - [Helm](https://github.com/kubernetes/helm) (~package manager)
+  - [Spinnaker](https://www.spinnaker.io/) (Netflix' CD platform)
+  
+.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/whatsnext.md)]
+---
+
+class: pic
+
+.interstitial[![Image separating from the next chapter](https://gallant-turing-d0d520.netlify.com/containers/train-of-containers-2.jpg)]
+
+---
+
+name: toc-links-and-resources
+class: title
+
+Links and resources
+
+.nav[
+[Previous section](#toc-next-steps)
+|
+[Back to table of contents](#toc-chapter-3)
+|
+[Next section](#toc-)
+]
+
+.debug[(automatically generated title slide)]
+
+---
+# Links and resources
+
+All things Kubernetes:
+
+- [Kubernetes Community](https://kubernetes.io/community/) - Slack, Google Groups, meetups
+- [Kubernetes on StackOverflow](https://stackoverflow.com/questions/tagged/kubernetes)
+- [Play With Kubernetes Hands-On Labs](https://medium.com/@marcosnils/introducing-pwk-play-with-k8s-159fcfeb787b)
+
+All things Docker:
+
+- [Docker documentation](http://docs.docker.com/)
+- [Docker Hub](https://hub.docker.com)
+- [Docker on StackOverflow](https://stackoverflow.com/questions/tagged/docker)
+- [Play With Docker Hands-On Labs](http://training.play-with-docker.com/)
+
+Everything else:
+
+- [Local meetups](https://www.meetup.com/)
+
+.footnote[These slides (and future updates) are on → http://container.training/]
+
+.debug[[kube/links.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/links.md)]
+---
+class: title, self-paced
+
+Thank you!
+
+.debug[[common/thankyou.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/thankyou.md)]
+---
+
+class: title, in-person
+
+That's all, folks! <br/> Questions?
+
+![end](images/end.jpg)
+
+.debug[[common/thankyou.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/thankyou.md)]</textarea>
+    <script src="remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+        ratio: '16:9',
+        highlightSpans: true,
+        excludedClasses: ["self-paced"]
+      });
+    </script>
+    
+    <!-- 
+    These two scripts will be available only when loading the
+    content using the pub/sub server. Otherwise, they'll just
+    404 and that's OK.
+    -->
+    <script src="/socket.io/socket.io.js">
+    </script>
+    <script src="/remote.js">
+    </script>
+
+  </body>
+</html>

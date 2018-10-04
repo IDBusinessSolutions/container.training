@@ -1,31 +1,12 @@
 ## Intros
 
-- This slide should be customized by the tutorial instructor(s).
+- The workshop will run for half a day
 
-- Hello! We are:
+- This is a hands-on tutorial, so you will be running bash commands!
 
-   - .emoji[👩🏻‍🏫] Ann O'Nymous ([@...](https://twitter.com/...), Megacorp Inc)
-
-   - .emoji[👨🏾‍🎓] Stu Dent ([@...](https://twitter.com/...), University of Wakanda)
-
- <!-- .dummy[
-
-   - .emoji[👷🏻‍♀️] AJ ([@s0ulshake](https://twitter.com/s0ulshake), Travis CI)
-
-   - .emoji[🐳] Jérôme ([@jpetazzo](https://twitter.com/jpetazzo), Enix SAS)
-
-   - .emoji[⛵] Jérémy ([@jeremygarrouste](twitter.com/jeremygarrouste), Inpiwee)
-
-] -->
-
-- The workshop will run from ...
-
-- There will be a lunch break at ...
-
-  (And coffee breaks!)
+- There will be coffee breaks!
 
 - Feel free to interrupt for questions at any time
 
 - *Especially when you see full screen container pictures!*
 
-- Live feedback, questions, help: @@CHAT@@

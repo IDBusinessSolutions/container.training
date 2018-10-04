@@ -65,7 +65,7 @@
 
 .exercise[
 
-- Point your browser to the IP address of the node running `kubectl proxy`, port 8888
+- Point your browser at `http://localhost:8888/`
 
 ]
 
@@ -96,7 +96,7 @@ The result should look like this:
 
 - Access the `hasher` service through the special proxy route:
   ```open
-  http://`X.X.X.X`:8888/api/v1/namespaces/default/services/hasher/proxy
+  http://localhost:8888/api/v1/namespaces/<username>/services/hasher/proxy
   ```
 
 ]

@@ -1,8 +1,8 @@
 # Daemon sets
 
-- We want to scale `rng` in a way that is different from how we scaled `worker`
+- What if we want to scale `rng` in a way that is different from how we scaled `worker`
 
-- We want one (and exactly one) instance of `rng` per node
+- For example, what if we want one (and exactly one) instance of `rng` per node
 
 - What if we just scale up `deploy/rng` to the number of nodes?
 
@@ -12,7 +12,7 @@
 
   - if we remove (or reboot) a node, one `rng` container will restart elsewhere
 
-- Instead of a `deployment`, we will use a `daemonset`
+- Instead of a `deployment`, we could use a `daemonset`
 
 ---
 
@@ -34,524 +34,29 @@
 
 ---
 
-## Creating a daemon set
+## Daemon sets - you won't really use them
 
-- Unfortunately, as of Kubernetes 1.10, the CLI cannot create daemon sets
+- Daemon sets are not something you would normally have to worry about.
 
---
+- So why mention them at all?
 
-- More precisely: it doesn't have a subcommand to create a daemon set
+- Well, we do use them for **infrastructure** related operations, such as
 
---
+  - `kube2iam` for identity access management
 
-- But any kind of resource can always be created by providing a YAML description:
-  ```bash
-  kubectl apply -f foo.yaml
-  ```
+  - `scalyr-agent` to record all logs into [scalyr](https://www.scalyr.com/) for analysis
 
---
-
-- How do we create the YAML file for our daemon set?
-
---
-
-  - option 1: [read the docs](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#create-a-daemonset)
-
---
-
-  - option 2: `vi` our way out of it
+  - `sysdig-agent` for security, monitoring & forensics using [sysdig](https://sysdig.com/)
 
 ---
 
-## Creating the YAML file for our daemon set
+class: pic
 
-- Let's start with the YAML file for the current `rng` resource
-
-.exercise[
-
-- Dump the `rng` resource in YAML:
-  ```bash
-  kubectl get deploy/rng -o yaml --export >rng.yml 
-  ```
-
-- Edit `rng.yml`
-
-]
-
-Note: `--export` will remove "cluster-specific" information, i.e.:
-- namespace (so that the resource is not tied to a specific namespace)
-- status and creation timestamp (useless when creating a new resource)
-- resourceVersion and uid (these would cause... *interesting* problems)
+![Node, pod, container](images/k8s_training_daemonset.png)
 
 ---
 
-## "Casting" a resource to another
-
-- What if we just changed the `kind` field?
-
-  (It can't be that easy, right?)
-
-.exercise[
-
-- Change `kind: Deployment` to `kind: DaemonSet`
-
-- Save, quit
-
-- Try to create our new resource:
-  ```bash
-  kubectl apply -f rng.yml
-  ```
-
-]
-
---
-
-We all knew this couldn't be that easy, right!
-
----
-
-## Understanding the problem
-
-- The core of the error is:
-  ```
-  error validating data:
-  [ValidationError(DaemonSet.spec):
-  unknown field "replicas" in io.k8s.api.extensions.v1beta1.DaemonSetSpec,
-  ...
-  ```
-
---
-
-- *Obviously,* it doesn't make sense to specify a number of replicas for a daemon set
-
---
-
-- Workaround: fix the YAML
-
-  - remove the `replicas` field
-  - remove the `strategy` field (which defines the rollout mechanism for a deployment)
-  - remove the `status: {}` line at the end
-
---
-
-- Or, we could also ...
-
----
-
-## Use the `--force`, Luke
-
-- We could also tell Kubernetes to ignore these errors and try anyway
-
-- The `--force` flag's actual name is `--validate=false`
-
-.exercise[
-
-- Try to load our YAML file and ignore errors:
-  ```bash
-  kubectl apply -f rng.yml --validate=false
-  ```
-
-]
-
---
-
-🎩✨🐇
-
---
-
-Wait ... Now, can it be *that* easy?
-
----
-
-## Checking what we've done
-
-- Did we transform our `deployment` into a `daemonset`?
-
-.exercise[
-
-- Look at the resources that we have now:
-  ```bash
-  kubectl get all
-  ```
-
-]
-
---
-
-We have two resources called `rng`:
-
-- the *deployment* that was existing before
-
-- the *daemon set* that we just created
-
-We also have one too many pods.
-<br/>
-(The pod corresponding to the *deployment* still exists.)
-
----
-
-## `deploy/rng` and `ds/rng`
-
-- You can have different resource types with the same name
-
-  (i.e. a *deployment* and a *daemon set* both named `rng`)
-
-- We still have the old `rng` *deployment*
-
-  ```
-NAME                       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/rng        1         1         1            1           18m
-  ```
-
-- But now we have the new `rng` *daemon set* as well
-
-  ```
-NAME                DESIRED  CURRENT  READY  UP-TO-DATE  AVAILABLE  NODE SELECTOR  AGE
-daemonset.apps/rng  2        2        2      2           2          <none>         9s
-  ```
-
----
-
-## Too many pods
-
-- If we check with `kubectl get pods`, we see:
-
-  - *one pod* for the deployment (named `rng-xxxxxxxxxx-yyyyy`)
-
-  - *one pod per node* for the daemon set (named `rng-zzzzz`)
-
-  ```
-  NAME                        READY     STATUS    RESTARTS   AGE
-  rng-54f57d4d49-7pt82        1/1       Running   0          11m
-  rng-b85tm                   1/1       Running   0          25s
-  rng-hfbrr                   1/1       Running   0          25s
-  [...]
-  ```
-
---
-
-The daemon set created one pod per node, except on the master node.
-
-The master node has [taints](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/) preventing pods from running there.
-
-(To schedule a pod on this node anyway, the pod will require appropriate [tolerations](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/).)
-
-.footnote[(Off by one? We don't run these pods on the node hosting the control plane.)]
-
----
-
-## What are all these pods doing?
-
-- Let's check the logs of all these `rng` pods
-
-- All these pods have a `run=rng` label:
-
-  - the first pod, because that's what `kubectl run` does
-  - the other ones (in the daemon set), because we
-    *copied the spec from the first one*
-
-- Therefore, we can query everybody's logs using that `run=rng` selector
-
-.exercise[
-
-- Check the logs of all the pods having a label `run=rng`:
-  ```bash
-  kubectl logs -l run=rng --tail 1
-  ```
-
-]
-
---
-
-It appears that *all the pods* are serving requests at the moment.
-
----
-
-## The magic of selectors
-
-- The `rng` *service* is load balancing requests to a set of pods
-
-- This set of pods is defined as "pods having the label `run=rng`"
-
-.exercise[
-
-- Check the *selector* in the `rng` service definition:
-  ```bash
-  kubectl describe service rng
-  ```
-
-]
-
-When we created additional pods with this label, they were
-automatically detected by `svc/rng` and added as *endpoints*
-to the associated load balancer.
-
----
-
-## Removing the first pod from the load balancer
-
-- What would happen if we removed that pod, with `kubectl delete pod ...`?
-
---
-
-  The `replicaset` would re-create it immediately.
-
---
-
-- What would happen if we removed the `run=rng` label from that pod?
-
---
-
-  The `replicaset` would re-create it immediately.
-
---
-
-  ... Because what matters to the `replicaset` is the number of pods *matching that selector.*
-
---
-
-- But but but ... Don't we have more than one pod with `run=rng` now?
-
---
-
-  The answer lies in the exact selector used by the `replicaset` ...
-
----
-
-## Deep dive into selectors
-
-- Let's look at the selectors for the `rng` *deployment* and the associated *replica set*
-
-.exercise[
-
-- Show detailed information about the `rng` deployment:
-  ```bash
-  kubectl describe deploy rng
-  ```
-
-- Show detailed information about the `rng` replica:
-  <br/>(The second command doesn't require you to get the exact name of the replica set)
-  ```bash
-  kubectl describe rs rng-yyyy
-  kubectl describe rs -l run=rng
-  ```
-
-]
-
---
-
-The replica set selector also has a `pod-template-hash`, unlike the pods in our daemon set.
-
----
-
-# Updating a service through labels and selectors
-
-- What if we want to drop the `rng` deployment from the load balancer?
-
-- Option 1: 
-
-  - destroy it
-
-- Option 2: 
-
-  - add an extra *label* to the daemon set
-
-  - update the service *selector* to refer to that *label*
-
---
-
-Of course, option 2 offers more learning opportunities. Right?
-
----
-
-## Add an extra label to the daemon set
-
-- We will update the daemon set "spec"
-
-- Option 1:
-
-  - edit the `rng.yml` file that we used earlier
-
-  - load the new definition with `kubectl apply`
-
-- Option 2: 
-
-  - use `kubectl edit`
-
---
-
-*If you feel like you got this💕🌈, feel free to try directly.*
-
-*We've included a few hints on the next slides for your convenience!*
-
----
-
-## We've put resources in your resources
-
-- Reminder: a daemon set is a resource that creates more resources!
-
-- There is a difference between:
-
-  - the label(s) of a resource (in the `metadata` block in the beginning)
-
-  - the selector of a resource (in the `spec` block)
-
-  - the label(s) of the resource(s) created by the first resource (in the `template` block)
-
-- You need to update the selector and the template (metadata labels are not mandatory)
-
-- The template must match the selector
-
-  (i.e. the resource will refuse to create resources that it will not select)
-
----
-
-## Adding our label
-
-- Let's add a label `isactive: yes`
-
-- In YAML, `yes` should be quoted; i.e. `isactive: "yes"`
-
-.exercise[
-
-- Update the daemon set to add `isactive: "yes"` to the selector and template label:
-  ```bash
-  kubectl edit daemonset rng
-  ```
-
-- Update the service to add `isactive: "yes"` to its selector:
-  ```bash
-  kubectl edit service rng
-  ```
-
-]
-
----
-
-## Checking what we've done
-
-.exercise[
-
-- Check the most recent log line of all `run=rng` pods to confirm that exactly one per node is now active:
-  ```bash
-  kubectl logs -l run=rng --tail 1
-  ```
-
-]
-
-The timestamps should give us a hint about how many pods are currently receiving traffic.
-
-.exercise[
-
-- Look at the pods that we have right now:
-  ```bash
-  kubectl get pods
-  ```
-
-]
-
----
-
-## Cleaning up
-
-- The pods of the deployment and the "old" daemon set are still running
-
-- We are going to identify them programmatically
-
-.exercise[
-
-- List the pods with `run=rng` but without `isactive=yes`:
-  ```bash
-  kubectl get pods -l run=rng,isactive!=yes
-  ```
-
-- Remove these pods:
-  ```bash
-  kubectl delete pods -l run=rng,isactive!=yes
-  ```
-
-]
-
----
-
-## Cleaning up stale pods
-
-```
-$ kubectl get pods
-NAME                        READY     STATUS        RESTARTS   AGE
-rng-54f57d4d49-7pt82        1/1       Terminating   0          51m
-rng-54f57d4d49-vgz9h        1/1       Running       0          22s
-rng-b85tm                   1/1       Terminating   0          39m
-rng-hfbrr                   1/1       Terminating   0          39m
-rng-vplmj                   1/1       Running       0          7m
-rng-xbpvg                   1/1       Running       0          7m
-[...]
-```
-
-- The extra pods (noted `Terminating` above) are going away
-
-- ... But a new one (`rng-54f57d4d49-vgz9h` above) was restarted immediately!
-
---
-
-- Remember, the *deployment* still exists, and makes sure that one pod is up and running
-
-- If we delete the pod associated to the deployment, it is recreated automatically
-
----
-
-## Deleting a deployment
-
-.exercise[
-
-- Remove the `rng` deployment:
-  ```bash
-  kubectl delete deployment rng
-  ```
-]
-
---
-
-- The pod that was created by the deployment is now being terminated:
-
-```
-$ kubectl get pods
-NAME                        READY     STATUS        RESTARTS   AGE
-rng-54f57d4d49-vgz9h        1/1       Terminating   0          4m
-rng-vplmj                   1/1       Running       0          11m
-rng-xbpvg                   1/1       Running       0          11m
-[...]
-```
-
-Ding, dong, the deployment is dead! And the daemon set lives on.
-
----
-
-## Avoiding extra pods
-
-- When we changed the definition of the daemon set, it immediately created new pods. We had to remove the old ones manually.
-
-- How could we have avoided this?
-
---
-
-- By adding the `isactive: "yes"` label to the pods before changing the daemon set!
-
-- This can be done programmatically with `kubectl patch`:
-
-  ```bash
-    PATCH='
-    metadata:
-      labels:
-        isactive: "yes"
-    '
-    kubectl get pods -l run=rng -l controller-revision-hash -o name |
-      xargs kubectl patch -p "$PATCH" 
-  ```
-
----
-
-## Labels and debugging
+# Labels and debugging
 
 - When a pod is misbehaving, we can delete it: another one will be recreated
 
@@ -584,3 +89,118 @@ Ding, dong, the deployment is dead! And the daemon set lives on.
     (by setting their label accordingly)
 
 - This gives us building blocks for canary and blue/green deployments
+
+---
+
+## Removing a pod from the load balancer
+
+- let's reuse our old friend `pingpong` and:
+
+  - Run it with a specific label
+  
+  - Remove (not destroy!) the pod by altering the pod label
+
+---
+
+## Creating our labelled deployment
+
+- let's start by creating a new deployment:
+
+.exercise[
+- in a separate window watch the pods so you can what happens:
+  ```bash
+  kubectl get pods -w
+  ```
+- Let's use a new deployment to ping `1.1.1.1`, Cloudflare's 
+  [public DNS resolver](https://blog.cloudflare.com/announcing-1111/):
+  ```bash
+  kubectl run labeldemo --labels isactive=yes --image alpine ping 1.1.1.1
+  ```
+]
+
+  notice the change to the run command: `--labels isactive=yes` - we're specifying a label to be applied to that deployment
+
+---
+
+## What happened?
+- Unsurprisingly, we created a new pod that is constantly pinging.
+
+- So how is this different from our first attempt at this?
+
+.exercise[
+- using the label option, get the pods that are active and not active:
+```bash
+  kubectl get pods -l isactive=yes
+  kubectl get pods -l isactive=no
+```
+]
+- What do you see?
+
+---
+
+## Labels have been applied
+
+- you should have seen something like this:
+
+```
+$ kubectl get pods -l isactive=yes
+NAME                         READY     STATUS    RESTARTS   AGE
+labeldemo-854f7df968-p2rk9   1/1       Running   0          17s
+
+$ kubectl get pods -l isactive=no
+No resources found.
+```
+
+- our pod has an `isactive=yes` label applied to it
+
+- and there are no `isactive=no` pods running
+
+---
+
+## Altering a label
+
+- Now we wil edit one of our pods to make it "inactive" (using the handy `patch` command)
+.exercise[
+  ```bash
+PATCH='
+    metadata:
+      labels:
+        isactive: "no"
+    '
+    kubectl patch pod/labeldemo-XXXXXXXXXX-YYYYY -p "$PATCH" 
+```
+]
+
+- Remember to watch the pods while you do this
+
+---
+
+## Checking our pods
+
+- you should have seen a new `pod` being created.
+
+- let's re-look at the state of our pods using the two label commands we used previously
+
+- You should now see an "inactive" pod listed:
+
+```
+$ kubectl get pods -l isactive=yes
+NAME                         READY     STATUS    RESTARTS   AGE
+labeldemo-854f7df968-lr62s   1/1       Running   0          30s
+
+$ kubectl get pods -l isactive=no
+NAME                         READY     STATUS    RESTARTS   AGE
+labeldemo-854f7df968-p2rk9   1/1       Running   0          14m
+```
+
+---
+
+## What happened?
+
+- We changed the `label` of our `pod`
+
+- The `replicaset` then noticed that the `pod` no longer met the "conditions" of the deployment and created a new `pod`
+
+- Most importantly, the old `pod` was **not** removed
+
+- If the service on this `pod` was problematic then we could safely attach a debugger without impacting the customers in any way.

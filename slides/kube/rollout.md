@@ -197,7 +197,7 @@ class: extra-details
 
 - We want to:
 
-  - revert to `v0.1`
+  - revert to version `1.0.0`
   - be conservative on availability (always have desired number of available workers)
   - be aggressive on rollout speed (update more than one pod at a time) 
   - give some time to our workers to "warm up" before starting more
@@ -211,7 +211,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: $REGISTRY/worker:v0.1
+        image: $REGISTRY/worker:1.0.0
   strategy:
     rollingUpdate:
       maxUnavailable: 0
@@ -240,7 +240,7 @@ spec:
         spec:
           containers:
           - name: worker
-            image: $REGISTRY/worker:1.0.1
+            image: $REGISTRY/worker:1.0.0
       strategy:
         rollingUpdate:
           maxUnavailable: 0

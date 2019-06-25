@@ -29,13 +29,15 @@ Deploying and Scaling Microservices<br/>with Kubernetes<br/>
 
 .debug[
 ```
+ M slides/presentation.html
+?? slides/build_and_copy.sh
 
 ```
 
-These slides have been built from commit: dc922b8
+These slides have been built from commit: 93f789d
 
 
-[common/title.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/title.md)]
+[common/title.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/title.md)]
 ---
 
 class: title, in-person
@@ -52,7 +54,7 @@ Deploying and Scaling Microservices<br/>with Kubernetes<br/><br/></br>
 **Slides: http://container.training/**
 ]
 
-.debug[[common/title.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/title.md)]
+.debug[[common/title.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/title.md)]
 ---
 ## Intros
 
@@ -67,7 +69,7 @@ Deploying and Scaling Microservices<br/>with Kubernetes<br/><br/></br>
 - *Especially when you see full screen container pictures!*
 
 
-.debug[[logistics.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/logistics.md)]
+.debug[[logistics.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/logistics.md)]
 ---
 ## A brief introduction
 
@@ -86,7 +88,7 @@ Deploying and Scaling Microservices<br/>with Kubernetes<br/><br/></br>
 
 - ... And looking for answers on [StackOverflow](http://stackoverflow.com/questions/tagged/kubernetes) and other outlets
 
-.debug[[kube/intro.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/intro.md)]
+.debug[[kube/intro.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/intro.md)]
 ---
 
 class: self-paced
@@ -108,7 +110,7 @@ class: self-paced
 - If you are doing this on your own:
   <br/>the first chapter will give you various options to get your own cluster
 
-.debug[[kube/intro.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/intro.md)]
+.debug[[kube/intro.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/intro.md)]
 ---
 ## About these slides
 
@@ -137,7 +139,7 @@ class: self-paced
 ]
 -->
 
-.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/about-slides.md)]
 ---
 
 class: extra-details
@@ -158,7 +160,7 @@ class: extra-details
 
 - You can review these slides another time if you want, they'll be waiting for you ☺
 
-.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/about-slides.md)]
 ---
 
 class: pre-reqs
@@ -181,7 +183,7 @@ class: pre-reqs
 
   - If on MacOSX you can install via `brew`
 
-.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/about-slides.md)]
 ---
 
 class: pre-reqs
@@ -200,7 +202,7 @@ kubectl config set-context $(kubectl config current-context) --namespace=<USERNA
 kubectl config view | grep namespace:
 ```
 
-.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/about-slides.md)]
 ---
 
 class: pre-reqs
@@ -213,7 +215,7 @@ class: pre-reqs
 
   - `export TAG=1.0.0`
 
-.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/about-slides.md)]
+.debug[[common/about-slides.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/about-slides.md)]
 ---
 
 name: toc-chapter-1
@@ -262,7 +264,7 @@ name: toc-chapter-3
 
 
 
-.debug[[common/toc.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/toc.md)]
+.debug[[common/toc.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/toc.md)]
 ---
 
 class: pic
@@ -295,7 +297,7 @@ Kubernetes concepts
 
 - What does that really mean?
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 ## Basic things we can ask Kubernetes to do
@@ -315,7 +317,7 @@ Kubernetes concepts
 
 - Keep processing requests during the upgrade; update my containers one at a time
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 ## Other things that Kubernetes can do for us
@@ -336,7 +338,7 @@ Kubernetes concepts
 
 - Automating complex tasks (*operators*)
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 ## Kubernetes resources
@@ -355,21 +357,21 @@ Kubernetes concepts
  
   And much more! (We can see the full list by running `kubectl get`) for kubectl v1.10 or `kubectl api-resources` for kubectl 1.11
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s-arch3-thanks-weave.png)
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s_training_nodes_and_pods.png)
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 ## Credits
@@ -382,7 +384,7 @@ class: pic
 
 Diagram used with permission.
 
-.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/concepts-k8s.md)]
+.debug[[kube/concepts-k8s.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/concepts-k8s.md)]
 ---
 
 class: pic
@@ -425,7 +427,7 @@ Namespaces
 
   (In the resource YAML, the type is called `Kind`)
 
-.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/namespaces.md)]
 ---
 
 ## Pre-existing namespaces
@@ -444,7 +446,7 @@ Namespaces
   
   - Multi-tenanted services are deployed into a `common` namespace.
 
-.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/namespaces.md)]
 ---
 
 ## Using namespaces
@@ -460,14 +462,14 @@ Namespaces
 
 - We can manipulate contexts with the `kubectl config` command
 
-.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/namespaces.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s_training_namespace.png)
 
-.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/namespaces.md)]
+.debug[[kube/namespaces.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/namespaces.md)]
 ---
 
 class: pic
@@ -502,7 +504,7 @@ Running our first containers on Kubernetes
 
 - Then we are going to start additional copies of the pod
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Starting a simple pod with `kubectl run`
@@ -521,7 +523,7 @@ Running our first containers on Kubernetes
 
 OK, what just happened?
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Behind the scenes of `kubectl run`
@@ -544,7 +546,7 @@ We should see the following things:
 
 Note: as of 1.10.1, resource types are displayed in more detail.
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## What are these different things?
@@ -568,14 +570,14 @@ Note: as of 1.10.1, resource types are displayed in more detail.
 
 - A *replication controller* is the (deprecated) predecessor of a replica set
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s_training_pods_deployment.png)
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Our `pingpong` deployment
@@ -605,7 +607,7 @@ pod/pingpong-7c8bbcd9bc-6c9qz   1/1       Running   0          10m
 
   - scaling, high availability, rolling updates
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Viewing container output
@@ -629,7 +631,7 @@ pod/pingpong-7c8bbcd9bc-6c9qz   1/1       Running   0          10m
 
 ]
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Streaming logs in real time
@@ -656,7 +658,7 @@ pod/pingpong-7c8bbcd9bc-6c9qz   1/1       Running   0          10m
 
 ]
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Scaling our application
@@ -676,14 +678,14 @@ Note: what if we tried to scale `replicaset.apps/pingpong-xxxxxxxxxx`?
 
 We could! But the *deployment* would notice it right away, and scale back to the initial level.
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s_training_scaled_pods.png)
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Resilience
@@ -712,7 +714,7 @@ class: pic
   ```
 ]
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## What if we wanted something different?
@@ -730,7 +732,7 @@ class: pic
 
 - With `kubectl run --schedule=...`, we can also create *cronjobs*
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 ## Viewing logs of multiple pods
@@ -754,7 +756,7 @@ class: pic
 
 Unfortunately, `--follow` cannot (yet) be used to stream the logs from multiple containers.
 
-.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlrun.md)]
+.debug[[kube/kubectlrun.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlrun.md)]
 ---
 
 class: pic
@@ -795,7 +797,7 @@ Exposing containers
 
   `ClusterIP`, `NodePort`, `LoadBalancer`, `ExternalName`
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 ## Basic service types
@@ -816,7 +818,7 @@ These service types are always available.
 
 Under the hood: `kube-proxy` is using a userland proxy and a bunch of `iptables` rules.
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 ## More service types
@@ -834,7 +836,7 @@ Under the hood: `kube-proxy` is using a userland proxy and a bunch of `iptables`
 
 The `LoadBalancer` type is currently only available on AWS, Azure, and GCE.
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 ## Running containers with open ports
@@ -861,7 +863,7 @@ The `-w` option "watches" events happening on the specified resources.
 
 Note: please DO NOT call the service `search`. It would collide with the TLD.
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 ## Exposing our deployment
@@ -882,14 +884,14 @@ Note: please DO NOT call the service `search`. It would collide with the TLD.
 
 ]
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s_training_expose_deployment.png)
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 ## Testing our service
@@ -916,7 +918,7 @@ This is normal while the service starts up.
 
 Once it's running, our requests are load balanced across multiple pods.
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 class: extra-details
@@ -942,7 +944,7 @@ In the output, there will be a line starting with `Endpoints:`.
 
 That line will list a bunch of addresses in `host:port` format.
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 class: extra-details
@@ -967,7 +969,7 @@ class: extra-details
   kubectl get pods -l run=elastic -o wide
   ```
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 
 class: extra-details
@@ -987,13 +989,13 @@ error: the server doesn't have a resource type "endpoint"
 
 - The type doesn't represent a single endpoint, but a list of endpoints
 
-.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlexpose.md)]
+.debug[[kube/kubectlexpose.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlexpose.md)]
 ---
 class: title
 
 Our app on Kube
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 ## What's on the menu?
@@ -1010,7 +1012,7 @@ In this part, we will:
 
 - expose the web UI so we can access it from outside.
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 ## The plan
@@ -1021,7 +1023,7 @@ In this part, we will:
 
 - Expose (with a NodePort) the WebUI
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 class: extra-details
@@ -1046,7 +1048,7 @@ class: extra-details
 
 - Image tags should be meaningful, i.e. correspond to code branches, tags, or hashes
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 ## Deploying all the things
@@ -1069,7 +1071,7 @@ class: extra-details
 
 ]
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 ## Is this working?
@@ -1092,7 +1094,7 @@ class: extra-details
 
 💡 Oh right! We forgot to `expose`.
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 class: pic
@@ -1137,7 +1139,7 @@ Exposing services internally
 
 ]
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 ## Is this working yet?
@@ -1163,7 +1165,7 @@ Exposing services internally
 
 We should now see the `worker`, well, working happily.
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 class: pic
@@ -1211,7 +1213,7 @@ Exposing services for access
 
 ]
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 ## Accessing the web UI
@@ -1229,7 +1231,7 @@ Exposing services for access
 ]
 
 
-.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/ourapponkube.md)]
+.debug[[kube/ourapponkube.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/ourapponkube.md)]
 ---
 
 class: pic
@@ -1272,7 +1274,7 @@ Accessing internal services with `kubectl proxy`
 
   (Without using a `NodePort` or similar service)
 
-.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlproxy.md)]
 ---
 
 ## Secure by default
@@ -1293,7 +1295,7 @@ Accessing internal services with `kubectl proxy`
 
 - Not-so-great when running it on a remote machine
 
-.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlproxy.md)]
 ---
 
 ## Running `kubectl proxy` on a remote machine
@@ -1315,7 +1317,7 @@ Accessing internal services with `kubectl proxy`
 <br/>
 (Don't do this on a real cluster!)]
 
-.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlproxy.md)]
 ---
 
 ## Viewing available API routes
@@ -1340,7 +1342,7 @@ The result should look like this:
     …
 ```
 
-.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlproxy.md)]
 ---
 
 ## Connecting to a service through the proxy
@@ -1363,7 +1365,7 @@ The result should look like this:
 
 You should see the banner of the hasher service: `HASHER running on ...`
 
-.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlproxy.md)]
 ---
 
 ## Stopping the proxy
@@ -1377,7 +1379,7 @@ You should see the banner of the hasher service: `HASHER running on ...`
 ]
 
 
-.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlproxy.md)]
+.debug[[kube/kubectlproxy.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlproxy.md)]
 ---
 
 class: pic
@@ -1427,7 +1429,7 @@ After a few seconds, the graph in the web UI should show up.
 <br/>
 (And peak at 10 hashes/second, just like when we were running on a single one.)
 
-.debug[[kube/kubectlscale.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/kubectlscale.md)]
+.debug[[kube/kubectlscale.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/kubectlscale.md)]
 ---
 
 class: pic
@@ -1468,7 +1470,7 @@ Daemon sets
 
 - Instead of a `deployment`, we could use a `daemonset`
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Daemon sets in practice
@@ -1487,7 +1489,7 @@ Daemon sets
 
 - They can also be restricted to run [only on some nodes](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#running-pods-on-only-some-nodes)
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Daemon sets - you won't really use them
@@ -1504,14 +1506,14 @@ Daemon sets
 
   - `sysdig-agent` for security, monitoring & forensics using [sysdig](https://sysdig.com/)
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 class: pic
 
 ![Node, pod, container](images/k8s_training_daemonset.png)
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 class: pic
@@ -1553,7 +1555,7 @@ Labels and debugging
 
   (Very useful to troubleshoot intermittent and elusive bugs)
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Labels and advanced rollout control
@@ -1572,7 +1574,7 @@ Labels and debugging
 
 - This gives us building blocks for canary and blue/green deployments
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Removing a pod from the load balancer
@@ -1583,7 +1585,7 @@ Labels and debugging
   
   - Remove (not destroy!) the pod by altering the pod label
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Creating our labelled deployment
@@ -1604,7 +1606,7 @@ Labels and debugging
 
   notice the change to the run command: `--labels isactive=yes` - we're specifying a label to be applied to that deployment
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## What happened?
@@ -1621,7 +1623,7 @@ Labels and debugging
 ]
 - What do you see?
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Labels have been applied
@@ -1641,7 +1643,7 @@ No resources found.
 
 - and there are no `isactive=no` pods running
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Altering a label
@@ -1660,7 +1662,7 @@ PATCH='
 
 - Remember to watch the pods while you do this
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## Checking our pods
@@ -1681,7 +1683,7 @@ NAME                         READY     STATUS    RESTARTS   AGE
 labeldemo-854f7df968-p2rk9   1/1       Running   0          14m
 ```
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 ## What happened?
@@ -1694,7 +1696,7 @@ labeldemo-854f7df968-p2rk9   1/1       Running   0          14m
 
 - If the service on this `pod` was problematic then we could safely attach a debugger without impacting the customers in any way.
 
-.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/daemonset.md)]
+.debug[[kube/daemonset.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/daemonset.md)]
 ---
 
 class: pic
@@ -1731,7 +1733,7 @@ Rolling updates
   
   - if something goes wrong, ¯\\\_(ツ)\_/¯
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Rolling updates
@@ -1753,7 +1755,7 @@ Rolling updates
 - We have the possibility to rollback to the previous version
   <br/>(if the update fails or is unsatisfactory in any way)
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Checking current rollout parameters
@@ -1770,7 +1772,7 @@ Rolling updates
 
 ]
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 
@@ -1784,7 +1786,7 @@ Rolling updates
 
 - Rolling updates can be monitored with the `kubectl rollout` subcommand
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Deploying a new version of the `worker` service
@@ -1813,7 +1815,7 @@ Rolling updates
 
 That rollout should be pretty quick. What shows in the web UI?
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Give it some time
@@ -1836,7 +1838,7 @@ That rollout should be pretty quick. What shows in the web UI?
 
   (The grace period is 30 seconds, but [can be changed](https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods) if needed)
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Rolling out something invalid
@@ -1860,7 +1862,7 @@ That rollout should be pretty quick. What shows in the web UI?
 
 Our rollout is stuck. However, the app is not dead (just 10% slower).
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## What's going on with our rollout?
@@ -1873,7 +1875,7 @@ Our rollout is stuck. However, the app is not dead (just 10% slower).
 
 - Because `MaxSurge=1`, so in addition to replacing the terminated one, the rollout is also starting one more
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 class: extra-details
@@ -1894,7 +1896,7 @@ class: extra-details
 
 - Our rollout is stuck at this point!
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Recovering from a bad rollout
@@ -1921,14 +1923,14 @@ class: extra-details
 
 ]
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Changing rollout parameters
 
 - We want to:
 
-  - revert to `v0.1`
+  - revert to version `1.0.0`
   - be conservative on availability (always have desired number of available workers)
   - be aggressive on rollout speed (update more than one pod at a time) 
   - give some time to our workers to "warm up" before starting more
@@ -1942,7 +1944,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: $REGISTRY/worker:v0.1
+        image: $REGISTRY/worker:1.0.0
   strategy:
     rollingUpdate:
       maxUnavailable: 0
@@ -1951,7 +1953,7 @@ spec:
 ```
 ]
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 ## Applying changes through a YAML patch
@@ -1972,7 +1974,7 @@ spec:
         spec:
           containers:
           - name: worker
-            image: $REGISTRY/worker:1.0.1
+            image: $REGISTRY/worker:1.0.0
       strategy:
         rollingUpdate:
           maxUnavailable: 0
@@ -1987,7 +1989,7 @@ spec:
 
 ]
 
-.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/rollout.md)]
+.debug[[kube/rollout.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/rollout.md)]
 ---
 
 class: pic
@@ -2016,7 +2018,7 @@ Next Steps
 
 - Some follow-up topics...
 
-.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/whatsnext.md)]
+.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/whatsnext.md)]
 ---
 
 ## Managing the configuration of our applications
@@ -2033,7 +2035,7 @@ Next Steps
 
   (It's the container equivalent of the password on a post-it note on your screen)
 
-.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/whatsnext.md)]
+.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/whatsnext.md)]
 ---
 
 ## Managing stack deployments
@@ -2051,7 +2053,7 @@ Next Steps
   - [Helm](https://github.com/kubernetes/helm) (~package manager)
   - [Spinnaker](https://www.spinnaker.io/) (Netflix' CD platform)
   
-.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/whatsnext.md)]
+.debug[[kube/whatsnext.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/whatsnext.md)]
 ---
 
 class: pic
@@ -2097,13 +2099,13 @@ Everything else:
 
 .footnote[These slides (and future updates) are on → http://container.training/]
 
-.debug[[kube/links.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/kube/links.md)]
+.debug[[kube/links.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/kube/links.md)]
 ---
 class: title, self-paced
 
 Thank you!
 
-.debug[[common/thankyou.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/thankyou.md)]
+.debug[[common/thankyou.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/thankyou.md)]
 ---
 
 class: title, in-person
@@ -2112,7 +2114,7 @@ That's all, folks! <br/> Questions?
 
 ![end](images/end.jpg)
 
-.debug[[common/thankyou.md](https://github.com/IDBusinessSolutions/container.training.git/tree/task/tweak-daemonset/slides/common/thankyou.md)]</textarea>
+.debug[[common/thankyou.md](https://github.com/IDBusinessSolutions/container.training.git/tree/defect/correct-version-in-rolling-patch-yaml/slides/common/thankyou.md)]</textarea>
     <script src="remark.min.js" type="text/javascript">
     </script>
     <script type="text/javascript">
